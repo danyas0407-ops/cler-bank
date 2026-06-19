@@ -3,50 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>КлерБанк & КЛ</title>
+    <title>КЛЕР БАНК & КЛ</title>
     <style>
-        body { background: #121212; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        .app-container { width: 100%; max-width: 480px; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; background: #2b2b2b; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; background: linear-gradient(90deg, #481173, #cb11ab); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 12px; background: #ff9900; }
-        .admin-panel { background: #2a1435; border: 1px solid #cb11ab; }
+        :root { --main-bg: #0f0f0f; --accent: #8a2be2; --card: #1a1a1a; --text: #fff; }
+        body { background: var(--main-bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; }
+        .app { width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; }
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #333; }
+        h2 { margin-top: 0; color: var(--accent); font-size: 18px; }
+        .balance { font-size: 36px; font-weight: bold; text-align: center; margin: 10px 0; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: white; border-radius: 12px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .order-item { background: #222; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
-<div class="app-container">
-    <div id="auth-screen" class="screen">
-        <div class="card">
-            <h3>Вход в КЛ</h3>
-            <input type="text" id="auth-username" placeholder="Ник...">
-            <input type="password" id="auth-password" placeholder="Пароль...">
+<div class="app">
+    <div id="auth-screen">
+        <div class="card"><h2>Вход в КЛЕР БАНК</h2>
+            <input type="text" id="auth-username" placeholder="Никнейм">
+            <input type="password" id="auth-password" placeholder="Пароль">
             <button onclick="handleLogin()">Войти</button>
-            <button onclick="handleRegister()" style="background: #333;">Создать аккаунт</button>
         </div>
     </div>
 
-    <div id="main-screen" class="screen" style="display:none;">
-        <div class="card">
-            <div id="user-info"></div>
-            <div style="font-size: 32px; font-weight: bold; color: #00ff66;"><span id="user-balance">0</span> РБ</div>
+    <div id="main-screen" style="display:none;">
+        <div class="card"><h2>🏦 БАНК</h2>
+            <div class="balance"><span id="user-balance">0</span> РБ</div>
         </div>
-        <div class="card">
-            <h3>Заказать товар</h3>
-            <input type="text" id="order-item-name" placeholder="Например: Кола...">
-            <button onclick="createOrder()">Оформить заказ</button>
+        <div class="card"><h2>⚡ ПОПОЛНЕНИЕ (СБП)</h2>
+            <p style="font-size:12px; color:#888;">Переведите по номеру +79990000000 (Серёга) и пришлите скриншот.</p>
+            <input type="number" id="sbp-amount" placeholder="Сумма пополнения">
+            <button onclick="alert('Заявка на пополнение отправлена!')">ОТПРАВИТЬ ЧЕК В СБП</button>
         </div>
-        <div class="card">
-            <h3>Мои заказы</h3>
-            <div id="my-orders-list"></div>
+        <div class="card"><h2>📦 МОИ ЗАКАЗЫ</h2>
+            <input type="text" id="item-name" placeholder="Что заказать?">
+            <button onclick="createOrder()">ЗАКАЗАТЬ</button>
+            <div id="orders-list" style="margin-top:15px;"></div>
         </div>
-        <div id="admin-section" class="card admin-panel" style="display:none;">
-            <h3>👑 Админка Серёги</h3>
-            <input type="text" id="admin-target-user" placeholder="Ник игрока">
-            <input type="number" id="admin-money-amount" placeholder="Сумма (или -сумма)">
-            <button onclick="adminChangeBalance()" style="background:#00ff66; color:black;">💰 Изменить баланс</button>
-            <h4>Заказы:</h4>
-            <div id="all-orders-list"></div>
+        <div id="admin-panel" class="card" style="display:none; border-color:var(--accent);">
+            <h2>👑 АДМИН ПАНЕЛЬ</h2>
+            <input type="text" id="admin-user" placeholder="Ник игрока">
+            <input type="number" id="admin-sum" placeholder="Сумма">
+            <button onclick="adminChangeBalance()">НАЧИСЛИТЬ РБ</button>
+            <div id="all-orders"></div>
         </div>
     </div>
 </div>
@@ -55,56 +54,37 @@
     async function handleLogin() {
         const username = document.getElementById('auth-username').value;
         const password = document.getElementById('auth-password').value;
-        const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username, password}) });
+        const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username, password})});
         const data = await res.json();
-        if(data.success) { currentUser = data.user; showMain(); } else alert(data.message);
-    }
-    async function handleRegister() {
-        const username = document.getElementById('auth-username').value;
-        const password = document.getElementById('auth-password').value;
-        const res = await fetch('/api/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username, password}) });
-        alert((await res.json()).message);
-    }
-    function showMain() {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-screen').style.display = 'block';
-        document.getElementById('user-name').innerText = currentUser.username;
-        if(currentUser.username === 'bot_banker') document.getElementById('admin-section').style.display = 'block';
-        loadAll();
-    }
-    async function adminChangeBalance() {
-        const targetUser = document.getElementById('admin-target-user').value;
-        const amount = document.getElementById('admin-money-amount').value;
-        await fetch('/api/admin/change-balance', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({targetUser, amount}) });
-        alert('Баланс изменён!');
+        if(data.success) { currentUser = data.user; document.getElementById('auth-screen').style.display='none'; document.getElementById('main-screen').style.display='block'; loadData(); } else alert(data.message);
     }
     async function createOrder() {
-        const item = document.getElementById('order-item-name').value;
-        await fetch('/api/orders/create', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: currentUser.username, item}) });
-        loadAll();
+        const item = document.getElementById('item-name').value;
+        await fetch('/api/orders/create', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({username: currentUser.username, item}) });
+        loadData();
     }
-    async function updateOrderStatus(id, status) {
-        await fetch('/api/orders/update-status', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({orderId: id, newStatus: status}) });
-        loadAll();
+    async function adminChangeBalance() {
+        const targetUser = document.getElementById('admin-user').value;
+        const amount = document.getElementById('admin-sum').value;
+        await fetch('/api/admin/change-balance', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({targetUser, amount}) });
+        loadData();
     }
-    async function loadAll() {
-        // Баланс
+    async function loadData() {
         const resBal = await fetch(`/api/user/balance/${currentUser.username}`);
         document.getElementById('user-balance').innerText = (await resBal.json()).balance;
-        // Мои заказы
         const resMy = await fetch(`/api/orders/my/${currentUser.username}`);
-        document.getElementById('my-orders-list').innerHTML = (await resMy.json()).map(o => `<div>${o.item}: <b>${o.status}</b></div>`).join('');
-        // Админка
+        document.getElementById('orders-list').innerHTML = (await resMy.json()).map(o => `<div class="order-item">${o.item} <b>${o.status}</b></div>`).join('');
         if(currentUser.username === 'bot_banker') {
+            document.getElementById('admin-panel').style.display = 'block';
             const resAll = await fetch('/api/orders/all');
-            const orders = (await resAll.json()).filter(o => o.status !== 'Выдано');
-            document.getElementById('all-orders-list').innerHTML = orders.map(o => `
-                <div style="margin:10px 0;">
-                    <b>${o.username}</b>: ${o.item} (${o.status})<br>
-                    <button onclick="updateOrderStatus(${o.id}, 'Выдано')" style="background:#ff00cc; padding:5px;">✅ Выдано</button>
-                </div>
+            document.getElementById('all-orders').innerHTML = (await resAll.json()).filter(o=>o.status!=='Выдано').map(o => `
+                <div class="order-item">${o.username}: ${o.item} <button onclick="updateStatus(${o.id}, 'Выдано')" style="width:auto; padding:5px;">✅</button></div>
             `).join('');
         }
+    }
+    async function updateStatus(id, status) {
+        await fetch('/api/orders/update-status', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({orderId: id, newStatus: status}) });
+        loadData();
     }
 </script>
 </body>
