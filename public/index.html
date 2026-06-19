@@ -5,33 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>КЛЕР БАНК</title>
     <style>
-        body { 
-            background: #0a0a0a; color: white; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            text-align: center; margin: 0; padding: 15px; font-size: 16px; 
-        }
-        .box { 
-            width: 100%; max-width: 400px; margin: 10px auto; padding: 20px; 
-            background: #151515; border-radius: 20px; border: 1px solid #333; box-sizing: border-box; 
-        }
-        .panel {
-            background: #222; padding: 15px; border-radius: 15px; margin-bottom: 20px;
-        }
-        input { 
-            width: 100%; padding: 16px; margin: 10px 0; border-radius: 12px; 
-            border: none; box-sizing: border-box; font-size: 16px; background: #2a2a2a; color: white;
-        }
-        button { 
-            width: 100%; padding: 16px; margin: 10px 0; border-radius: 12px; 
-            border: none; cursor: pointer; font-weight: bold; font-size: 16px; 
-        }
+        body { background: #0a0a0a; color: white; font-family: -apple-system, BlinkMacSystemFont, sans-serif; text-align: center; margin: 0; padding: 15px; font-size: 16px; }
+        .box { width: 100%; max-width: 400px; margin: 10px auto; padding: 20px; background: #151515; border-radius: 20px; border: 1px solid #333; box-sizing: border-box; }
+        .panel { background: #222; padding: 15px; border-radius: 15px; margin-bottom: 15px; text-align: left; }
+        .panel h4 { margin: 0 0 10px 0; color: #8a2be2; }
+        input { width: 100%; padding: 14px; margin: 6px 0; border-radius: 10px; border: none; box-sizing: border-box; font-size: 16px; background: #2a2a2a; color: white; }
+        button { width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; font-size: 16px; }
         .btn-main { background: #8a2be2; color: white; }
         .btn-sec { background: #333; color: white; }
         .btn-transfer { background: #00ffcc; color: black; }
-        .order-card { 
-            background: #2a2a2a; padding: 15px; margin: 12px 0; border-radius: 12px; 
-            text-align: left; font-size: 15px; border-left: 4px solid #8a2be2; word-wrap: break-word; 
-        }
+        .order-card { background: #2a2a2a; padding: 12px; margin: 10px 0; border-radius: 10px; text-align: left; font-size: 14px; border-left: 4px solid #8a2be2; }
+        
+        /* Стили для новых мини-кнопок статусов */
+        .status-btn-group { display: flex; gap: 5px; margin-top: 10px; }
+        .btn-status { flex: 1; padding: 8px 0; border: none; border-radius: 6px; color: white; font-size: 12px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -45,111 +32,152 @@
 </div>
 
 <div id="main" class="box" style="display:none">
-    <h3>Баланс: <span id="bal" style="color: #8a2be2; font-size: 24px;">0</span> РБ</h3>
+    <h2 style="margin-bottom: 5px;">КЛЕР БАНК</h2>
+    <h3 style="margin-top: 0;">Баланс: <span id="bal" style="color: #00ffcc;">0</span> РБ</h3>
     
     <div class="panel">
-        <h4 style="margin-top: 0; color: #00ffcc;">💸 Перевод средств</h4>
+        <h4>💸 Перевод РБ игроку</h4>
         <input id="t-user" placeholder="Ник получателя">
-        <input id="t-amount" type="number" placeholder="Сумма (РБ)">
-        <button class="btn-transfer" onclick="transfer()">Перевести</button>
+        <input id="t-amount" type="number" placeholder="Сумма перевода">
+        <button class="btn-transfer" onclick="transfer()">Отправить</button>
     </div>
 
     <div class="panel">
-        <h4 style="margin-top: 0;">🛒 Магазин масок</h4>
-        <input id="item" placeholder="Какую маску заказываете?">
+        <h4>🛒 Заказать маску</h4>
+        <input id="item" placeholder="Название маски">
         <button class="btn-main" onclick="order()">Заказать (100 РБ)</button>
     </div>
     
-    <h4 style="text-align: left;">Ваши заказы:</h4>
+    <h4 style="text-align: left; margin-left: 5px;">Ваши заказы:</h4>
     <div id="my-orders"></div>
 
-    <div id="admin-panel" style="display:none; border-top: 2px solid #333; margin-top: 25px; padding-top: 15px;">
-        <h3 style="color: #00ffcc;">👑 Админ-панель</h3>
+    <div id="admin-panel" style="display:none; border-top: 2px solid #8a2be2; margin-top: 20px; padding-top: 10px;">
+        <h3 style="color: #8a2be2; margin-bottom: 10px;">👑 Админ-панель</h3>
+        <div class="panel" style="background: #1a1a1a; border: 1px solid #8a2be2;">
+            <h4 style="color: #00ffcc;">Выдать РБ</h4>
+            <input id="a-user" placeholder="Ник игрока">
+            <input id="a-amount" type="number" placeholder="Сумма">
+            <button style="background: #8a2be2; color: white;" onclick="adminGive()">Начислить</button>
+        </div>
+        <h4 style="text-align: left;">Все заказы:</h4>
         <div id="all-orders"></div>
     </div>
+
+    <button class="btn-sec" onclick="logout()" style="background:#555; padding:10px; margin-top:20px;">Выйти из аккаунта</button>
 </div>
 
 <script>
-    let currentUser = null;
+    let windowUser = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const saved = localStorage.getItem('cler_bank_user');
+        if (saved) {
+            windowUser = saved;
+            document.getElementById('auth').style.display = 'none';
+            document.getElementById('main').style.display = 'block';
+            updateData();
+            setInterval(updateData, 3000);
+        }
+    });
 
     async function auth(type) {
-        const u = document.getElementById('u').value;
+        const u = document.getElementById('u').value.trim();
         const p = document.getElementById('p').value;
+        if(!u || !p) return alert("Заполните поля!");
+
         const res = await fetch('/api/'+type, { 
             method:'POST', headers:{'Content-Type':'application/json'}, 
             body:JSON.stringify({username: u, password: p})
         });
         const data = await res.json();
+        
         if(data.success) { 
-            currentUser = u;
+            windowUser = data.username;
+            localStorage.setItem('cler_bank_user', windowUser);
             document.getElementById('auth').style.display='none'; 
             document.getElementById('main').style.display='block'; 
             updateData();
-        } else {
-            alert(data.message || "Ошибка!");
-        }
+            setInterval(updateData, 3000);
+        } else { alert(data.message || "Ошибка!"); }
+    }
+
+    function logout() {
+        localStorage.removeItem('cler_bank_user');
+        location.reload();
     }
 
     async function updateData() {
-        const res = await fetch('/api/data/' + currentUser);
-        const data = await res.json();
+        if (!windowUser) return;
+        const res = await fetch('/api/data/' + windowUser);
         
+        if (res.status === 404) {
+            logout();
+            return;
+        }
+
+        const data = await res.json();
         document.getElementById('bal').innerText = data.balance;
         
         document.getElementById('my-orders').innerHTML = data.myOrders.map(o => 
             `<div class="order-card"><b>${o.item}</b><br><span style="color:#aaa">Статус:</span> ${o.status}</div>`
-        ).join('') || "<p style='color:gray; font-size:14px;'>Заказов пока нет</p>";
+        ).join('') || "<p style='color:gray; font-size:14px;'>Заказов нет</p>";
 
         if(data.role === 'admin') {
             document.getElementById('admin-panel').style.display = 'block';
             document.getElementById('all-orders').innerHTML = data.allOrders.map(o => 
                 `<div class="order-card">
-                    <b>Клиент:</b> ${o.username} <br>
-                    <b>Маска:</b> ${o.item} <br>
-                    <b>Статус:</b> <span style="color:#00ffcc">${o.status}</span> <br>
-                    <button onclick="setStatus(${o.id}, '✅ Выполнено')" style="background: #28a745; color: white; padding: 12px; margin-top: 10px; font-size: 14px; width: 100%; border: none; border-radius: 8px; cursor: pointer;">Отметить Выполнено</button>
+                    <b>От:</b> ${o.username} | <b>Маска:</b> ${o.item}<br>
+                    <b>Статус:</b> <span style="color:#00ffcc">${o.status}</span>
+                    <div class="status-btn-group">
+                        <button class="btn-status" style="background: #ff9800;" onclick="setStatus(${o.id}, '🛠 Делается')">Делается</button>
+                        <button class="btn-status" style="background: #17a2b8;" onclick="setStatus(${o.id}, '📦 Лежит в ПВЗ')">В ПВЗ</button>
+                        <button class="btn-status" style="background: #28a745;" onclick="setStatus(${o.id}, '✅ Выдано')">Выдано</button>
+                    </div>
                 </div>`
-            ).join('') || "<p style='color:gray; font-size:14px;'>Новых заказов нет</p>";
+            ).join('') || "<p style='color:gray; font-size:14px;'>Нет активных заказов</p>";
         }
     }
 
-    // Функция перевода
     async function transfer() {
         const recipient = document.getElementById('t-user').value;
         const amount = document.getElementById('t-amount').value;
-        
-        if(!recipient || !amount) return alert("Заполните все поля для перевода!");
+        if(!recipient || !amount) return alert("Заполните поля!");
 
         const res = await fetch('/api/transfer', { 
             method:'POST', headers:{'Content-Type':'application/json'}, 
-            body:JSON.stringify({sender: currentUser, recipient: recipient, amount: amount})
+            body:JSON.stringify({sender: windowUser, recipient: recipient, amount: amount})
         });
         const data = await res.json();
         if(data.success) {
-            alert(`Успешно переведено ${amount} РБ игроку ${recipient}!`);
-            document.getElementById('t-user').value = '';
-            document.getElementById('t-amount').value = '';
+            alert(`Успешно переведено ${amount} РБ!`);
+            document.getElementById('t-user').value = ''; document.getElementById('t-amount').value = '';
             updateData();
-        } else {
-            alert(data.message);
-        }
+        } else { alert(data.message); }
+    }
+
+    async function adminGive() {
+        const recipient = document.getElementById('a-user').value;
+        const amount = document.getElementById('a-amount').value;
+        const res = await fetch('/api/admin/give', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({admin: windowUser, recipient, amount})
+        });
+        if((await res.json()).success) {
+            alert(`Выдано ${amount} РБ!`);
+            document.getElementById('a-user').value = ''; document.getElementById('a-amount').value = '';
+            updateData();
+        } else { alert("Ошибка выдачи"); }
     }
 
     async function order() {
         const item = document.getElementById('item').value;
-        if(!item) return alert("Введите название маски!");
-        
-        const res = await fetch('/api/order', { 
+        if(!item) return alert("Укажите название!");
+        await fetch('/api/order', { 
             method:'POST', headers:{'Content-Type':'application/json'}, 
-            body:JSON.stringify({username: currentUser, item: item})
+            body:JSON.stringify({username: windowUser, item: item})
         });
-        const data = await res.json();
-        if(data.success) {
-            document.getElementById('item').value = '';
-            updateData();
-        } else {
-            alert(data.message);
-        }
+        document.getElementById('item').value = '';
+        updateData();
     }
 
     async function setStatus(id, status) {
