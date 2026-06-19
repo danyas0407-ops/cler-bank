@@ -8,8 +8,8 @@
         .box { width: 320px; margin: 50px auto; padding: 25px; background: #151515; border-radius: 20px; border: 1px solid #333; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; }
         button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-login { background: #8a2be2; color: white; }
-        .btn-reg { background: #333; color: white; }
+        .btn-main { background: #8a2be2; color: white; }
+        .btn-sec { background: #333; color: white; }
     </style>
 </head>
 <body>
@@ -18,44 +18,39 @@
     <h2>Вход в КЛЕР БАНК</h2>
     <input id="u" placeholder="Никнейм">
     <input id="p" type="password" placeholder="Пароль">
-    <input id="ph" placeholder="Номер телефона (для регистрации)">
-    
-    <button class="btn-login" onclick="auth('login')">Войти</button>
-    <button class="btn-reg" onclick="auth('register')">Регистрация</button>
+    <button class="btn-main" onclick="auth('login')">Войти</button>
+    <button class="btn-sec" onclick="auth('register')">Регистрация</button>
 </div>
 
 <div id="main" class="box" style="display:none">
-    <h3>Баланс: <span id="bal">0</span> РБ</h3>
-    <a href="gallery.html" style="color:cyan; text-decoration:none;">🖼 Посмотреть работы</a>
-    <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+    <h3>КЛЕР БАНК</h3>
     <input id="item" placeholder="Название маски">
-    <button class="btn-login" onclick="order()">Заказать (100 РБ)</button>
-    <div id="chat-hist" style="height:100px; overflow-y:auto; background:#222; margin:10px 0; padding:5px; font-size:12px;"></div>
-    <input id="chat-in" placeholder="Сообщение...">
-    <button class="btn-reg" onclick="sendChat()">Отправить в чат</button>
+    <button class="btn-main" onclick="order()">Заказать</button>
 </div>
 
 <script>
-    let user = null;
+    let currentUsername = "";
     async function auth(type) {
-        const d = { 
-            username: document.getElementById('u').value, 
-            password: document.getElementById('p').value,
-            phone: document.getElementById('ph').value 
-        };
+        const u = document.getElementById('u').value;
+        const p = document.getElementById('p').value;
         const res = await fetch('/api/'+type, { 
-            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d)
+            method:'POST', headers:{'Content-Type':'application/json'}, 
+            body:JSON.stringify({username: u, password: p})
         });
-        const data = await res.json();
-        if(data.success) { 
-            user = d.username; 
+        if((await res.json()).success) { 
+            currentUsername = u;
             document.getElementById('auth').style.display='none'; 
             document.getElementById('main').style.display='block'; 
-        } else {
-            alert(data.message || "Ошибка!");
-        }
+        } else alert("Ошибка!");
     }
-    // ... (функции order и sendChat остаются такими же)
+    async function order() {
+        const item = document.getElementById('item').value;
+        await fetch('/api/order', { 
+            method:'POST', headers:{'Content-Type':'application/json'}, 
+            body:JSON.stringify({username: currentUsername, item: item})
+        });
+        alert("Заказ оформлен!");
+    }
 </script>
 </body>
 </html>
