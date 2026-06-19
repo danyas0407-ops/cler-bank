@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Клер Банк Терминал</title>
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/480/merchant-account.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --cler-blue: #4f46e5;
+            --cler-gradient: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            --cler-dark: #0f172a;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+        }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px; 
+        }
+        .app-container { 
+            width: 100%; 
+            max-width: 400px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+        }
+        
+        /* Шапка Клер Банка */
+        .header { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 10px 5px; 
+        }
+        .logo { 
+            width: 38px; 
+            height: 38px; 
+            background: var(--cler-gradient); 
+            border-radius: 12px; /* Стильный квадрат со скруглением вместо круга */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: 800; 
+            font-size: 20px; 
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        .brand-name { 
+            font-size: 22px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+            color: var(--cler-dark);
+        }
+        .brand-name span {
+            color: var(--cler-blue);
+        }
+
+        /* Премиальная карта Клер Банка */
+        .bank-card { 
+            background: var(--cler-gradient); 
+            color: white; 
+            padding: 24px; 
+            border-radius: 24px; 
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.25); 
+            position: relative;
+            overflow: hidden;
+        }
+        .bank-card::before {
+            content: '';
+            position: absolute;
+            right: -50px;
+            top: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        .card-type { 
+            font-size: 13px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7; 
+            margin-bottom: 5px; 
+        }
+        .card-balance { 
+            font-size: 34px; 
+            font-weight: 700; 
+            margin-bottom: 25px; 
+            letter-spacing: -0.5px;
+        }
+        .card-holder { 
+            font-size: 14px; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* Кнопки действий */
+        .actions-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 14px; 
+        }
+        .action-btn { 
+            background: var(--card-bg); 
+            border: none; 
+            padding: 18px; 
+            border-radius: 20px; 
+            font-size: 15px; 
+            font-weight: 700; 
+            color: var(--text-main);
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 14px rgba(0,0,0,0.04); 
+            transition: transform 0.1s, background-color 0.1s;
+        }
+        .action-btn:active {
+            transform: scale(0.96);
+            background-color: #f1f5f9;
+        }
+        .action-btn .icon { 
+            font-size: 24px; 
+            color: var(--cler-blue); 
+        }
+
+        /* Блоки форм */
+        .form-section { 
+            background: var(--card-bg); 
+            padding: 22px; 
+            border-radius: 24px; 
+            display: none; 
+            flex-direction: column; 
+            gap: 16px; 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        }
+        .form-section.active { display: flex; }
+        .form-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--cler-dark);
+        }
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 14px; 
+            font-size: 16px; 
+            background: #f8fafc; 
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: var(--cler-blue);
+            background: #fff;
+        }
+        .submit-btn { 
+            background: var(--cler-gradient); 
+            color: white; 
+            border: none; 
+            padding: 16px; 
+            border-radius: 14px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+        .submit-btn:active {
+            opacity: 0.9;
+        }
+        #reader { 
+            width: 100%; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            margin-top: 10px; 
+            border: 2px dashed #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <div class="logo">К</div>
+        <div class="brand-name">Клер<span>Банк</span></div>
+    </div>
+
+    <div class="bank-card">
+        <div class="card-type">Клер-Счёт (Роблики)</div>
+        <div class="card-balance" id="user-balance">0 РБ</div>
+        <div class="card-holder" id="user-name">Загрузка...</div>
+    </div>
+
+    <div class="actions-grid">
+        <button class="action-btn" onclick="showForm('transfer-form')">
+            <span class="icon">💸</span>
+            <span>Перевод</span>
+        </button>
+        <button class="action-btn" onclick="showForm('pvz-form'); startScanner();">
+            <span class="icon">📦</span>
+            <span>ПВЗ Выдача</span>
+        </button>
+    </div>
+
+    <div id="transfer-form" class="form-section">
+        <h3>Перевод робликов</h3>
+        <input type="text" id="transfer-to" placeholder="Никнейм получателя">
+        <input type="number" id="transfer-amount" placeholder="Сумма (РБ)">
+        <button class="submit-btn" onclick="executeTransfer()">Отправить роблики</button>
+    </div>
+
+    <div id="pvz-form" class="form-section">
+        <h3>Сканирование заказа маски</h3>
+        <div id="reader"></div>
+        <div id="order-info" style="display:none; margin-top:15px; padding:18px; background:#f0fdf4; border-radius:16px; border: 1px solid #bbf7d0;">
+            <p style="margin-bottom: 6px;"><strong>Заказ №:</strong> <span id="info-id"></span></p>
+            <p style="margin-bottom: 6px;"><strong>Клиент:</strong> <span id="info-customer"></span></p>
+            <p style="margin-bottom: 8px;"><strong>Товар:</strong> <span id="info-product"></span></p>
+            <p style="color:var(--cler-blue); font-size: 17px; margin-bottom: 12px;"><strong>Где лежит:</strong> <span id="info-loc"></span></p>
+            <button class="submit-btn" style="width:100%;" id="confirm-btn">Выдать маску покупателю</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+    const CURRENT_USER = 'Seryoga'; 
+    let html5QrcodeScanner;
+
+    async function updateBalance() {
+        try {
+            const res = await fetch(`/api/balance/${CURRENT_USER}`);
+            const data = await res.json();
+            document.getElementById('user-balance').innerText = `${data.balance.toLocaleString()} РБ`;
+            document.getElementById('user-name').innerText = data.username;
+        } catch (err) { document.getElementById('user-name').innerText = "Оффлайн"; }
+    }
+
+    function showForm(formId) {
+        document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+        document.getElementById(formId).classList.add('active');
+    }
+
+    async function executeTransfer() {
+        const to = document.getElementById('transfer-to').value;
+        const amount = Number(document.getElementById('transfer-amount').value);
+        if(!to || !amount) return alert("Заполните поля!");
+
+        const res = await fetch('/api/transaction', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from: CURRENT_USER, to: to, amount: amount })
+        });
+        if(res.ok) {
+            alert("Роблики успешно отправлены!");
+            updateBalance();
+            document.getElementById('transfer-amount').value = '';
+        } else {
+            const err = await res.json();
+            alert(err.error);
+        }
+    }
+
+    function startScanner() {
+        if(html5QrcodeScanner) return;
+        html5QrcodeScanner = new Html5Qrcode("reader");
+        html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess);
+    }
+
+    async function onScanSuccess(decodedText) {
+        const res = await fetch('/api/pvz/scan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qrToken: decodedText })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            document.getElementById('order-info').style.display = 'block';
+            document.getElementById('info-id').innerText = data.orderId;
+            document.getElementById('info-customer').innerText = data.customer;
+            document.getElementById('info-product').innerText = data.product;
+            document.getElementById('info-loc').innerText = data.storageLocation;
+            document.getElementById('confirm-btn').onclick = () => completeOrder(decodedText);
+        } else { alert(data.error); }
+    }
+
+    async function completeOrder(token) {
+        await fetch('/api/pvz/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qrToken: token })
+        });
+        alert("Заказ передан! Статус обновлен в Клер Банке.");
+        document.getElementById('order-info').style.display = 'none';
+        if(html5QrcodeScanner) {
+            await html5QrcodeScanner.stop();
+            html5QrcodeScanner = null;
+            startScanner();
+        }
+    }
+
+    updateBalance();
+    setInterval(updateBalance, 5000);
+</script>
+</body>
+</html>

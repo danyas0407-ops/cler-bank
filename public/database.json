@@ -1,0 +1,16 @@
+{
+  "users": {
+    "Seryoga": 5000,
+    "Ivan": 1500,
+    "RoboMarket": 0
+  },
+  "orders": {
+    "MASK_WOLF_777": {
+      "orderId": "402",
+      "customer": "Ivan",
+      "product": "Картонная маска Волка",
+      "storageLocation": "Стеллаж 1, Коробка А (у дороги)",
+      "status": "Оплачено, ждет выдачи"
+    }
+  }
+}
