@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои работы | КЛЕР</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: sans-serif; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .item { background: #1a1a1a; padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #333; }
+        img { width: 100%; height: 200px; object-fit: cover; border-radius: 10px; }
+        h1 { text-align: center; color: #8a2be2; margin-bottom: 40px; }
+        .back-btn { display: block; text-align: center; margin-top: 30px; color: #8a2be2; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Галерея работ</h1>
+    <div class="grid" id="gallery"></div>
+    <a href="index.html" class="back-btn">← Вернуться в Банк</a>
+
+    <script>
+        // Просто впиши сюда имена своих файлов из папки images
+        const myPhotos = [
+            "5a8e038b-0e62-4ea5-8279-38ef22350d6d.jpg",
+            "851963ee-6c91-48e3-9e92-5355d73723cc.jpg",
+            "c655a604-89fd-4b77-b887-48591fba883e.jpg",
+            "d6e2222b-6030-45ee-a135-17f622f14212.jpg",
+            "db41502f-7ca3-4881-99f3-924c46319f78.jpg",
+            "dcb17cee-52e6-471f-a9d7-dbafb0197d5c.jpg"
+        ];
+
+        const gallery = document.getElementById('gallery');
+        myPhotos.forEach((photo, index) => {
+            gallery.innerHTML += `
+                <div class="item">
+                    <img src="images/${photo}">
+                    <h3>Маска №${index + 1}</h3>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
