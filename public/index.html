@@ -2,321 +2,338 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Клер Банк Терминал</title>
-    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/480/merchant-account.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КлерБанк & ПВЗ</title>
     <style>
         :root {
-            --cler-blue: #4f46e5;
-            --cler-gradient: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
-            --cler-dark: #0f172a;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-secondary: #64748b;
-        }
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            -webkit-tap-highlight-color: transparent; 
-        }
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 20px; 
-        }
-        .app-container { 
-            width: 100%; 
-            max-width: 400px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px; 
-        }
-        
-        /* Шапка Клер Банка */
-        .header { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            padding: 10px 5px; 
-        }
-        .logo { 
-            width: 38px; 
-            height: 38px; 
-            background: var(--cler-gradient); 
-            border-radius: 12px; /* Стильный квадрат со скруглением вместо круга */
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-weight: 800; 
-            font-size: 20px; 
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
-        .brand-name { 
-            font-size: 22px; 
-            font-weight: 800; 
-            letter-spacing: -0.5px;
-            color: var(--cler-dark);
-        }
-        .brand-name span {
-            color: var(--cler-blue);
+            --wb-purple: #481173;
+            --wb-pink: #cb11ab;
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #ffffff;
+            --text-gray: #aaaaaa;
         }
 
-        /* Премиальная карта Клер Банка */
-        .bank-card { 
-            background: var(--cler-gradient); 
-            color: white; 
-            padding: 24px; 
-            border-radius: 24px; 
-            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.25); 
-            position: relative;
-            overflow: hidden;
-        }
-        .bank-card::before {
-            content: '';
-            position: absolute;
-            right: -50px;
-            top: -50px;
-            width: 150px;
-            height: 150px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-        }
-        .card-type { 
-            font-size: 13px; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.7; 
-            margin-bottom: 5px; 
-        }
-        .card-balance { 
-            font-size: 34px; 
-            font-weight: 700; 
-            margin-bottom: 25px; 
-            letter-spacing: -0.5px;
-        }
-        .card-holder { 
-            font-size: 14px; 
-            text-transform: uppercase; 
-            letter-spacing: 1.5px;
-            font-weight: 600;
-        }
-
-        /* Кнопки действий */
-        .actions-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 14px; 
-        }
-        .action-btn { 
-            background: var(--card-bg); 
-            border: none; 
-            padding: 18px; 
-            border-radius: 20px; 
-            font-size: 15px; 
-            font-weight: 700; 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            cursor: pointer; 
-            box-shadow: 0 4px 14px rgba(0,0,0,0.04); 
-            transition: transform 0.1s, background-color 0.1s;
-        }
-        .action-btn:active {
-            transform: scale(0.96);
-            background-color: #f1f5f9;
-        }
-        .action-btn .icon { 
-            font-size: 24px; 
-            color: var(--cler-blue); 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
         }
 
-        /* Блоки форм */
-        .form-section { 
-            background: var(--card-bg); 
-            padding: 22px; 
-            border-radius: 24px; 
-            display: none; 
-            flex-direction: column; 
-            gap: 16px; 
-            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background-color: #181818;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
-        .form-section.active { display: flex; }
-        .form-section h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--cler-dark);
+
+        .header {
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 2px solid var(--wb-purple);
+            margin-bottom: 20px;
         }
-        input { 
-            width: 100%; 
-            padding: 15px; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 14px; 
-            font-size: 16px; 
-            background: #f8fafc; 
-            outline: none;
-            transition: border-color 0.2s;
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            background: linear-gradient(45deg, var(--wb-pink), #ff00cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        input:focus {
-            border-color: var(--cler-blue);
-            background: #fff;
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2a2a2a;
         }
-        .submit-btn { 
-            background: var(--cler-gradient); 
-            color: white; 
-            border: none; 
-            padding: 16px; 
-            border-radius: 14px; 
-            font-size: 16px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+
+        .balance-title { color: var(--text-gray); font-size: 14px; }
+        .balance-amount { font-size: 32px; font-weight: bold; margin: 10px 0; color: #00ff66; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px 0;
+            background-color: #2b2b2b;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            box-sizing: border-box;
+            font-size: 16px;
         }
-        .submit-btn:active {
-            opacity: 0.9;
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, var(--wb-purple), var(--wb-pink));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        #reader { 
-            width: 100%; 
-            border-radius: 16px; 
-            overflow: hidden; 
-            margin-top: 10px; 
-            border: 2px dashed #cbd5e1;
+
+        button:hover { opacity: 0.9; }
+        .btn-secondary { background: #333; margin-top: 10px; }
+
+        .order-item {
+            background: #252525;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 5px solid #ff9900;
         }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .status-принят { background-color: #ff9900; color: black; }
+        .status-делается { background-color: #0077ff; color: white; }
+        .status-пвз { background-color: #00ff66; color: black; }
+
+        .admin-panel {
+            background: #2a1435;
+            border: 1px solid var(--wb-pink);
+        }
+        .admin-order {
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .admin-btns { display: flex; gap: 5px; margin-top: 5px; }
+        .admin-btns button { padding: 8px; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="header">
-        <div class="logo">К</div>
-        <div class="brand-name">Клер<span>Банк</span></div>
+        <h1>КЛЕР БАНК & WB</h1>
     </div>
 
-    <div class="bank-card">
-        <div class="card-type">Клер-Счёт (Роблики)</div>
-        <div class="card-balance" id="user-balance">0 РБ</div>
-        <div class="card-holder" id="user-name">Загрузка...</div>
+    <div id="auth-screen" class="screen active">
+        <div class="card">
+            <h3>Вход в систему</h3>
+            <label>Ваш Никнейм:</label>
+            <input type="text" id="auth-username" placeholder="Введите ник...">
+            <label>Пароль:</label>
+            <input type="password" id="auth-password" placeholder="Введите пароль...">
+            
+            <button onclick="handleLogin()">Войти</button>
+            <button onclick="handleRegister()" class="btn-secondary">Создать аккаунт</button>
+        </div>
     </div>
 
-    <div class="actions-grid">
-        <button class="action-btn" onclick="showForm('transfer-form')">
-            <span class="icon">💸</span>
-            <span>Перевод</span>
-        </button>
-        <button class="action-btn" onclick="showForm('pvz-form'); startScanner();">
-            <span class="icon">📦</span>
-            <span>ПВЗ Выдача</span>
-        </button>
-    </div>
+    <div id="main-screen" class="screen">
+        <div class="card">
+            <div class="balance-title">Личный кабинет: <span id="user-name" style="color:white; font-weight:bold;"></span></div>
+            <div class="balance-amount"><span id="user-balance">0</span> РБ</div>
+            <button onclick="logout()" class="btn-secondary" style="padding: 6px; font-size: 12px; width: auto; margin-top: 5px;">Выйти из аккаунта</button>
+        </div>
 
-    <div id="transfer-form" class="form-section">
-        <h3>Перевод робликов</h3>
-        <input type="text" id="transfer-to" placeholder="Никнейм получателя">
-        <input type="number" id="transfer-amount" placeholder="Сумма (РБ)">
-        <button class="submit-btn" onclick="executeTransfer()">Отправить роблики</button>
-    </div>
+        <div class="card">
+            <h3>📦 Заказать товар в ПВЗ</h3>
+            <label>Что хотите заказать?</label>
+            <input type="text" id="order-item-name" placeholder="Например: Стак алмазов, Кола, Чипсы...">
+            <button onclick="createOrder()">Оформить заказ</button>
+        </div>
 
-    <div id="pvz-form" class="form-section">
-        <h3>Сканирование заказа маски</h3>
-        <div id="reader"></div>
-        <div id="order-info" style="display:none; margin-top:15px; padding:18px; background:#f0fdf4; border-radius:16px; border: 1px solid #bbf7d0;">
-            <p style="margin-bottom: 6px;"><strong>Заказ №:</strong> <span id="info-id"></span></p>
-            <p style="margin-bottom: 6px;"><strong>Клиент:</strong> <span id="info-customer"></span></p>
-            <p style="margin-bottom: 8px;"><strong>Товар:</strong> <span id="info-product"></span></p>
-            <p style="color:var(--cler-blue); font-size: 17px; margin-bottom: 12px;"><strong>Где лежит:</strong> <span id="info-loc"></span></p>
-            <button class="submit-btn" style="width:100%;" id="confirm-btn">Выдать маску покупателю</button>
+        <div class="card">
+            <h3>📋 Мои заказы и статусы</h3>
+            <div id="my-orders-list">Пока нет заказов...</div>
+        </div>
+
+        <div id="admin-section" class="card admin-panel" style="display: none;">
+            <h3>👑 Управление заказами ПВЗ (Для Серёги)</h3>
+            <div id="all-orders-list">Заказов в системе нет...</div>
         </div>
     </div>
 </div>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-    const CURRENT_USER = 'Seryoga'; 
-    let html5QrcodeScanner;
+    let currentUser = null;
 
-    async function updateBalance() {
+    function switchScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    // Функция Входа
+    async function handleLogin() {
+        const username = document.getElementById('auth-username').value.trim();
+        const password = document.getElementById('auth-password').value.trim();
+
+        if(!username || !password) return alert('Заполните все поля!');
+
         try {
-            const res = await fetch(`/api/balance/${CURRENT_USER}`);
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
             const data = await res.json();
-            document.getElementById('user-balance').innerText = `${data.balance.toLocaleString()} РБ`;
-            document.getElementById('user-name').innerText = data.username;
-        } catch (err) { document.getElementById('user-name').innerText = "Оффлайн"; }
-    }
 
-    function showForm(formId) {
-        document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
-        document.getElementById(formId).classList.add('active');
-    }
-
-    async function executeTransfer() {
-        const to = document.getElementById('transfer-to').value;
-        const amount = Number(document.getElementById('transfer-amount').value);
-        if(!to || !amount) return alert("Заполните поля!");
-
-        const res = await fetch('/api/transaction', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ from: CURRENT_USER, to: to, amount: amount })
-        });
-        if(res.ok) {
-            alert("Роблики успешно отправлены!");
-            updateBalance();
-            document.getElementById('transfer-amount').value = '';
-        } else {
-            const err = await res.json();
-            alert(err.error);
+            if (data.success) {
+                currentUser = data.user;
+                initDashboard();
+            } else {
+                alert(data.message);
+            }
+        } catch (err) {
+            alert('Ошибка соединения с сервером!');
         }
     }
 
-    function startScanner() {
-        if(html5QrcodeScanner) return;
-        html5QrcodeScanner = new Html5Qrcode("reader");
-        html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, onScanSuccess);
+    // Функция Регистрации
+    async function handleRegister() {
+        const username = document.getElementById('auth-username').value.trim();
+        const password = document.getElementById('auth-password').value.trim();
+
+        if(!username || !password) return alert('Заполните все поля!');
+
+        try {
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            alert(data.message);
+        } catch (err) {
+            alert('Ошибка при регистрации!');
+        }
     }
 
-    async function onScanSuccess(decodedText) {
-        const res = await fetch('/api/pvz/scan', {
+    // Загрузка личного кабинета после входа
+    function initDashboard() {
+        document.getElementById('user-name').innerText = currentUser.username;
+        document.getElementById('user-balance').innerText = currentUser.balance;
+        switchScreen('main-screen');
+        
+        // Проверяем, зашел ли Серёга или админ
+        if(currentUser.username === 'bot_banker' || currentUser.role === 'admin') {
+            document.getElementById('admin-section').style.display = 'block';
+            loadAdminOrders();
+        } else {
+            document.getElementById('admin-section').style.display = 'none';
+        }
+
+        loadMyOrders();
+    }
+
+    // Создать новый заказ
+    async function createOrder() {
+        const itemInput = document.getElementById('order-item-name');
+        const item = itemInput.value.trim();
+        if(!item) return alert('Напишите, что именно вы заказываете!');
+
+        const res = await fetch('/api/orders/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ qrToken: decodedText })
+            body: JSON.stringify({ username: currentUser.username, item: item })
         });
         const data = await res.json();
-        if (res.ok) {
-            document.getElementById('order-info').style.display = 'block';
-            document.getElementById('info-id').innerText = data.orderId;
-            document.getElementById('info-customer').innerText = data.customer;
-            document.getElementById('info-product').innerText = data.product;
-            document.getElementById('info-loc').innerText = data.storageLocation;
-            document.getElementById('confirm-btn').onclick = () => completeOrder(decodedText);
-        } else { alert(data.error); }
-    }
-
-    async function completeOrder(token) {
-        await fetch('/api/pvz/complete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ qrToken: token })
-        });
-        alert("Заказ передан! Статус обновлен в Клер Банке.");
-        document.getElementById('order-info').style.display = 'none';
-        if(html5QrcodeScanner) {
-            await html5QrcodeScanner.stop();
-            html5QrcodeScanner = null;
-            startScanner();
+        if(data.success) {
+            itemInput.value = '';
+            loadMyOrders();
+            if(currentUser.username === 'bot_banker' || currentUser.role === 'admin') loadAdminOrders();
         }
     }
 
-    updateBalance();
-    setInterval(updateBalance, 5000);
+    // Показать заказы текущего вошедшего пользователя
+    async function loadMyOrders() {
+        const res = await fetch(`/api/orders/my/${currentUser.username}`);
+        const orders = await res.json();
+        const container = document.getElementById('my-orders-list');
+        
+        if(orders.length === 0) {
+            container.innerHTML = 'У вас пока нет активных заказов.';
+            return;
+        }
+
+        container.innerHTML = orders.map(o => {
+            let badgeClass = 'status-принят';
+            let borderLeftColor = '#ff9900';
+            
+            if(o.status === 'Делается') {
+                badgeClass = 'status-делается';
+                borderLeftColor = '#0077ff';
+            }
+            if(o.status === 'Лежит и ждёт вас в ПВЗ') {
+                badgeClass = 'status-пвз';
+                borderLeftColor = '#00ff66';
+            }
+
+            return `
+                <div class="order-item" style="border-left-color: ${borderLeftColor}">
+                    <strong>${o.item}</strong><br>
+                    <span class="status-badge ${badgeClass}">${o.status}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Показать ВСЕ заказы для Серёги
+    async function loadAdminOrders() {
+        const res = await fetch('/api/orders/all');
+        const orders = await res.json();
+        const container = document.getElementById('all-orders-list');
+
+        if(orders.length === 0) {
+            container.innerHTML = 'Заказов от клиентов пока нет.';
+            return;
+        }
+
+        container.innerHTML = orders.map(o => `
+            <div class="admin-order">
+                <div>👤 <b>${o.username}</b> заказал: <b>${o.item}</b></div>
+                <div>Статус: <u>${o.status}</u></div>
+                <div class="admin-btns">
+                    <button onclick="updateOrderStatus(${o.id}, 'Делается')" style="background:#0077ff">🔨 Делается</button>
+                    <button onclick="updateOrderStatus(${o.id}, 'Лежит и ждёт вас в ПВЗ')" style="background:#00ff66; color:black;">🏪 В ПВЗ</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Обновление статуса заказа кнопками админа
+    async function updateOrderStatus(orderId, newStatus) {
+        await fetch('/api/orders/update-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId, newStatus })
+        });
+        loadAdminOrders();
+        loadMyOrders();
+    }
+
+    // Выход
+    function logout() {
+        currentUser = null;
+        switchScreen('auth-screen');
+    }
 </script>
 </body>
 </html>
