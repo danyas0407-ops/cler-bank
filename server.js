@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// База данных
+// База данных в оперативной памяти (чтобы Vercel не выдавал ошибку записи)
 let db = {
     users: { "bot_banker": { "password": "123", "balance": 5000, "role": "admin" } },
     orders: []
@@ -13,7 +13,7 @@ let db = {
 
 app.post('/api/register', (req, res) => {
     const { username, password } = req.body;
-    if (db.users[username]) return res.status(400).json({ success: false, message: 'Ник уже занят' });
+    if (db.users[username]) return res.status(400).json({ success: false, message: 'Ник занят' });
     db.users[username] = { password, balance: 0, role: 'user' };
     res.json({ success: true });
 });
@@ -25,21 +25,25 @@ app.post('/api/login', (req, res) => {
     } else res.status(401).json({ success: false, message: 'Неверный логин или пароль' });
 });
 
-// Новый API для перевода денег
 app.post('/api/transfer', (req, res) => {
     const { sender, recipient, amount } = req.body;
     const sum = parseInt(amount);
-
-    if (!sum || sum <= 0) return res.status(400).json({ success: false, message: 'Неверная сумма!' });
-    if (!db.users[sender] || !db.users[recipient]) return res.status(400).json({ success: false, message: 'Получатель не найден!' });
+    if (!sum || sum <= 0) return res.status(400).json({ success: false, message: 'Неверная сумма' });
+    if (!db.users[sender] || !db.users[recipient]) return res.status(400).json({ success: false, message: 'Игрок не найден' });
     if (db.users[sender].balance < sum && db.users[sender].role !== 'admin') {
-        return res.status(400).json({ success: false, message: 'Недостаточно РБ!' });
+        return res.status(400).json({ success: false, message: 'Недостаточно РБ' });
     }
-
-    // Списываем у отправителя (если он не админ с бесконечными деньгами) и даем получателю
     if (db.users[sender].role !== 'admin') db.users[sender].balance -= sum;
     db.users[recipient].balance += sum;
+    res.json({ success: true });
+});
 
+app.post('/api/admin/give', (req, res) => {
+    const { admin, recipient, amount } = req.body;
+    if (db.users[admin]?.role !== 'admin') return res.status(403).json({ success: false });
+    const sum = parseInt(amount);
+    if (!db.users[recipient] || isNaN(sum)) return res.status(400).json({ success: false, message: 'Ошибка ввода' });
+    db.users[recipient].balance += sum;
     res.json({ success: true });
 });
 
@@ -49,7 +53,6 @@ app.post('/api/order', (req, res) => {
         return res.status(400).json({ success: false, message: 'Недостаточно РБ!' });
     }
     if (db.users[username].role !== 'admin') db.users[username].balance -= 100;
-    
     db.orders.push({ id: Date.now(), username, item, status: 'В обработке' });
     res.json({ success: true });
 });
