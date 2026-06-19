@@ -5,14 +5,14 @@
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; display: flex; justify-content: center; }
         .box { width: 350px; padding: 20px; background: #1a1a1a; border-radius: 20px; margin-top: 50px; }
-        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: none; box-sizing: border-box; }
         button { background: #8a2be2; color: white; font-weight: bold; cursor: pointer; }
-        .order { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
+        .order { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 <div class="box" id="auth">
-    <h2>Вход / Регистрация</h2>
+    <h2>КЛЕР БАНК: Вход</h2>
     <input id="u" placeholder="Никнейм">
     <input id="p" type="password" placeholder="Пароль">
     <button onclick="auth('login')">Войти</button>
@@ -21,12 +21,12 @@
 
 <div class="box" id="main" style="display:none">
     <h3>Баланс: <span id="bal">0</span> РБ</h3>
-    <input id="item" placeholder="Товар">
+    <input id="item" placeholder="Что заказать?">
     <button onclick="order()">Заказать</button>
     <div id="orders"></div>
     <div id="admin" style="display:none; border-top: 2px solid #8a2be2; margin-top: 20px;">
-        <h3>👑 Админка</h3>
-        <input id="a-u" placeholder="Ник">
+        <h3>👑 Админка Серёги</h3>
+        <input id="a-u" placeholder="Ник игрока">
         <input id="a-s" placeholder="Сумма">
         <button onclick="adminBal()">Начислить РБ</button>
         <div id="all-orders"></div>
