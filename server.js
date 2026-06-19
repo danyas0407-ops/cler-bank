@@ -5,43 +5,28 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 let db = {
-    users: { "admin": { "password": "123", "balance": 99999, "role": "admin" } },
-    orders: [], messages: {}, notifications: {}
+    users: { "bot_banker": { "password": "123", "balance": 5000 } },
+    orders: []
 };
 
 app.post('/api/register', (req, res) => {
-    const { username, password, phone } = req.body;
+    const { username, password } = req.body;
     if (db.users[username]) return res.status(400).json({ success: false });
-    db.users[username] = { password, balance: 0, phone };
+    db.users[username] = { password, balance: 0 };
     res.json({ success: true });
 });
 
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
     if (db.users[username] && db.users[username].password === password) {
-        res.json({ success: true, user: { username, ...db.users[username] } });
+        res.json({ success: true });
     } else res.status(401).json({ success: false });
 });
 
 app.post('/api/order', (req, res) => {
-    const { username, item, maskDesc, age } = req.body;
-    if (db.users[username].balance < 100) return res.status(400).json({ success: false });
-    db.users[username].balance -= 100;
-    db.orders.push({ id: Date.now(), orderNumber: Math.floor(1000 + Math.random() * 9000), username, item, maskDesc, age, status: 'Принят' });
+    const { username, item } = req.body;
+    db.orders.push({ username, item, status: 'Принят' });
     res.json({ success: true });
-});
-
-app.post('/api/chat/send', (req, res) => {
-    const { username, sender, text } = req.body;
-    if (!db.messages[username]) db.messages[username] = [];
-    db.messages[username].push({ sender, text });
-    res.json({ success: true });
-});
-
-app.get('/api/chat/:username', (req, res) => res.json(db.messages[req.params.username] || []));
-app.get('/api/data/:username', (req, res) => {
-    const u = db.users[req.params.username];
-    res.json({ balance: u.balance, myOrders: db.orders.filter(o => o.username === req.params.username) });
 });
 
 app.listen(3000);
