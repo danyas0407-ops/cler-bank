@@ -1,0 +1,12 @@
+{
+  "name": "cler-bank",
+  "version": "1.0.0",
+  "description": "Клер Банк и ПВЗ у 62 участка",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
