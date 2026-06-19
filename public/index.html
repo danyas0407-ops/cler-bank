@@ -5,68 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>КЛЕР БАНК</title>
     <style>
-        /* Базовые настройки для телефона */
         body { 
-            background: #0a0a0a; 
-            color: white; 
-            /* Добавлены системные шрифты, чтобы на iPhone и Android текст был идеально четким */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            text-align: center; 
-            margin: 0; 
-            padding: 15px; /* Отступы по краям экрана */
-            font-size: 16px; /* Увеличили базовый размер текста */
+            background: #0a0a0a; color: white; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            text-align: center; margin: 0; padding: 15px; font-size: 16px; 
         }
-        
-        /* Блок теперь растягивается под ширину телефона */
         .box { 
-            width: 100%; 
-            max-width: 400px; /* На ПК не будет слишком широким */
-            margin: 10px auto; 
-            padding: 20px; 
-            background: #151515; 
-            border-radius: 20px; 
-            border: 1px solid #333; 
-            box-sizing: border-box; 
+            width: 100%; max-width: 400px; margin: 10px auto; padding: 20px; 
+            background: #151515; border-radius: 20px; border: 1px solid #333; box-sizing: border-box; 
         }
-
-        /* Крупные поля ввода, чтобы легко попадать пальцем */
+        .panel {
+            background: #222; padding: 15px; border-radius: 15px; margin-bottom: 20px;
+        }
         input { 
-            width: 100%; 
-            padding: 16px; 
-            margin: 10px 0; 
-            border-radius: 12px; 
-            border: none; 
-            box-sizing: border-box; 
-            font-size: 16px; /* Текст внутри инпута крупный */
-            background: #222;
-            color: white;
+            width: 100%; padding: 16px; margin: 10px 0; border-radius: 12px; 
+            border: none; box-sizing: border-box; font-size: 16px; background: #2a2a2a; color: white;
         }
-
-        /* Крупные и удобные кнопки */
         button { 
-            width: 100%; 
-            padding: 16px; 
-            margin: 10px 0; 
-            border-radius: 12px; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 16px; 
+            width: 100%; padding: 16px; margin: 10px 0; border-radius: 12px; 
+            border: none; cursor: pointer; font-weight: bold; font-size: 16px; 
         }
-        
         .btn-main { background: #8a2be2; color: white; }
         .btn-sec { background: #333; color: white; }
-        
-        /* Карточки заказов */
+        .btn-transfer { background: #00ffcc; color: black; }
         .order-card { 
-            background: #222; 
-            padding: 15px; 
-            margin: 12px 0; 
-            border-radius: 12px; 
-            text-align: left; 
-            font-size: 15px; 
-            border-left: 4px solid #8a2be2;
-            word-wrap: break-word; /* Чтобы длинные слова не ломали экран */
+            background: #2a2a2a; padding: 15px; margin: 12px 0; border-radius: 12px; 
+            text-align: left; font-size: 15px; border-left: 4px solid #8a2be2; word-wrap: break-word; 
         }
     </style>
 </head>
@@ -81,15 +45,23 @@
 </div>
 
 <div id="main" class="box" style="display:none">
-    <h3>Баланс: <span id="bal" style="color: #8a2be2;">0</span> РБ</h3>
+    <h3>Баланс: <span id="bal" style="color: #8a2be2; font-size: 24px;">0</span> РБ</h3>
     
-    <div id="user-panel">
+    <div class="panel">
+        <h4 style="margin-top: 0; color: #00ffcc;">💸 Перевод средств</h4>
+        <input id="t-user" placeholder="Ник получателя">
+        <input id="t-amount" type="number" placeholder="Сумма (РБ)">
+        <button class="btn-transfer" onclick="transfer()">Перевести</button>
+    </div>
+
+    <div class="panel">
+        <h4 style="margin-top: 0;">🛒 Магазин масок</h4>
         <input id="item" placeholder="Какую маску заказываете?">
         <button class="btn-main" onclick="order()">Заказать (100 РБ)</button>
-        
-        <h4 style="text-align: left; margin-top: 20px;">Ваши заказы:</h4>
-        <div id="my-orders"></div>
     </div>
+    
+    <h4 style="text-align: left;">Ваши заказы:</h4>
+    <div id="my-orders"></div>
 
     <div id="admin-panel" style="display:none; border-top: 2px solid #333; margin-top: 25px; padding-top: 15px;">
         <h3 style="color: #00ffcc;">👑 Админ-панель</h3>
@@ -135,9 +107,31 @@
                     <b>Клиент:</b> ${o.username} <br>
                     <b>Маска:</b> ${o.item} <br>
                     <b>Статус:</b> <span style="color:#00ffcc">${o.status}</span> <br>
-                    <button onclick="setStatus(${o.id}, '✅ Выполнено')" style="background: #28a745; color: white; padding: 12px; margin-top: 10px; font-size: 14px;">Отметить как Выполнено</button>
+                    <button onclick="setStatus(${o.id}, '✅ Выполнено')" style="background: #28a745; color: white; padding: 12px; margin-top: 10px; font-size: 14px; width: 100%; border: none; border-radius: 8px; cursor: pointer;">Отметить Выполнено</button>
                 </div>`
             ).join('') || "<p style='color:gray; font-size:14px;'>Новых заказов нет</p>";
+        }
+    }
+
+    // Функция перевода
+    async function transfer() {
+        const recipient = document.getElementById('t-user').value;
+        const amount = document.getElementById('t-amount').value;
+        
+        if(!recipient || !amount) return alert("Заполните все поля для перевода!");
+
+        const res = await fetch('/api/transfer', { 
+            method:'POST', headers:{'Content-Type':'application/json'}, 
+            body:JSON.stringify({sender: currentUser, recipient: recipient, amount: amount})
+        });
+        const data = await res.json();
+        if(data.success) {
+            alert(`Успешно переведено ${amount} РБ игроку ${recipient}!`);
+            document.getElementById('t-user').value = '';
+            document.getElementById('t-amount').value = '';
+            updateData();
+        } else {
+            alert(data.message);
         }
     }
 
