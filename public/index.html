@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>КлерБанк & ПВЗ</title>
+    <title>КлерБанк & КЛ</title>
     <style>
         :root {
-            --wb-purple: #481173;
-            --wb-pink: #cb11ab;
+            --kl-purple: #481173;
+            --kl-pink: #cb11ab;
             --bg-dark: #121212;
             --card-bg: #1e1e1e;
             --text-main: #ffffff;
@@ -37,14 +37,14 @@
         .header {
             text-align: center;
             padding: 10px 0;
-            border-bottom: 2px solid var(--wb-purple);
+            border-bottom: 2px solid var(--kl-purple);
             margin-bottom: 20px;
         }
 
         .header h1 {
             margin: 0;
             font-size: 24px;
-            background: linear-gradient(45deg, var(--wb-pink), #ff00cc);
+            background: linear-gradient(45deg, var(--kl-pink), #ff00cc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -78,7 +78,7 @@
         button {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(90deg, var(--wb-purple), var(--wb-pink));
+            background: linear-gradient(90deg, var(--kl-purple), var(--kl-pink));
             border: none;
             border-radius: 8px;
             color: white;
@@ -114,7 +114,7 @@
 
         .admin-panel {
             background: #2a1435;
-            border: 1px solid var(--wb-pink);
+            border: 1px solid var(--kl-pink);
         }
         .admin-order {
             background: #1e1e1e;
@@ -130,7 +130,7 @@
 
 <div class="app-container">
     <div class="header">
-        <h1>КЛЕР БАНК & WB</h1>
+        <h1>КЛЕР БАНК & КЛ</h1>
     </div>
 
     <div id="auth-screen" class="screen active">
@@ -150,14 +150,14 @@
         <div class="card">
             <div class="balance-title">Личный кабинет: <span id="user-name" style="color:white; font-weight:bold;"></span></div>
             <div class="balance-amount"><span id="user-balance">0</span> РБ</div>
-            <button onclick="logout()" class="btn-secondary" style="padding: 6px; font-size: 12px; width: auto; margin-top: 5px;">Выйти из аккаунта</button>
+            <button onclick="logout()" class="btn-secondary" style="padding: 6px; font-size: 12px; width: auto; margin-top: 5px;">Выйти</button>
         </div>
 
         <div class="card">
-            <h3>📦 Заказать товар в ПВЗ</h3>
+            <h3>📦 Заказать товар в ПВЗ КЛ</h3>
             <label>Что хотите заказать?</label>
-            <input type="text" id="order-item-name" placeholder="Например: Стак алмазов, Кола, Чипсы...">
-            <button onclick="createOrder()">Оформить заказ</button>
+            <input type="text" id="order-item-name" placeholder="Например: Кола, чипсы, шоколадка...">
+            <button onclick="createOrder()">Оформить заказ в КЛ</button>
         </div>
 
         <div class="card">
@@ -166,7 +166,7 @@
         </div>
 
         <div id="admin-section" class="card admin-panel" style="display: none;">
-            <h3>👑 Управление заказами ПВЗ (Для Серёги)</h3>
+            <h3>👑 Управление заказами ПВЗ КЛ (Для Серёги)</h3>
             <div id="all-orders-list">Заказов в системе нет...</div>
         </div>
     </div>
@@ -180,11 +180,9 @@
         document.getElementById(screenId).classList.add('active');
     }
 
-    // Функция Входа
     async function handleLogin() {
         const username = document.getElementById('auth-username').value.trim();
         const password = document.getElementById('auth-password').value.trim();
-
         if(!username || !password) return alert('Заполните все поля!');
 
         try {
@@ -206,11 +204,9 @@
         }
     }
 
-    // Функция Регистрации
     async function handleRegister() {
         const username = document.getElementById('auth-username').value.trim();
         const password = document.getElementById('auth-password').value.trim();
-
         if(!username || !password) return alert('Заполните все поля!');
 
         try {
@@ -226,13 +222,11 @@
         }
     }
 
-    // Загрузка личного кабинета после входа
     function initDashboard() {
         document.getElementById('user-name').innerText = currentUser.username;
         document.getElementById('user-balance').innerText = currentUser.balance;
         switchScreen('main-screen');
         
-        // Проверяем, зашел ли Серёга или админ
         if(currentUser.username === 'bot_banker' || currentUser.role === 'admin') {
             document.getElementById('admin-section').style.display = 'block';
             loadAdminOrders();
@@ -243,11 +237,10 @@
         loadMyOrders();
     }
 
-    // Создать новый заказ
     async function createOrder() {
         const itemInput = document.getElementById('order-item-name');
         const item = itemInput.value.trim();
-        if(!item) return alert('Напишите, что именно вы заказываете!');
+        if(!item) return alert('Напишите, что заказываете!');
 
         const res = await fetch('/api/orders/create', {
             method: 'POST',
@@ -262,7 +255,6 @@
         }
     }
 
-    // Показать заказы текущего вошедшего пользователя
     async function loadMyOrders() {
         const res = await fetch(`/api/orders/my/${currentUser.username}`);
         const orders = await res.json();
@@ -295,7 +287,6 @@
         }).join('');
     }
 
-    // Показать ВСЕ заказы для Серёги
     async function loadAdminOrders() {
         const res = await fetch('/api/orders/all');
         const orders = await res.json();
@@ -318,7 +309,6 @@
         `).join('');
     }
 
-    // Обновление статуса заказа кнопками админа
     async function updateOrderStatus(orderId, newStatus) {
         await fetch('/api/orders/update-status', {
             method: 'POST',
@@ -329,7 +319,6 @@
         loadMyOrders();
     }
 
-    // Выход
     function logout() {
         currentUser = null;
         switchScreen('auth-screen');
