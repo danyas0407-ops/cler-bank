@@ -5,323 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>КлерБанк & КЛ</title>
     <style>
-        :root {
-            --kl-purple: #481173;
-            --kl-pink: #cb11ab;
-            --bg-dark: #121212;
-            --card-bg: #1e1e1e;
-            --text-main: #ffffff;
-            --text-gray: #aaaaaa;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            min-height: 100vh;
-            background-color: #181818;
-            padding: 20px;
-            box-sizing: border-box;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        .header {
-            text-align: center;
-            padding: 10px 0;
-            border-bottom: 2px solid var(--kl-purple);
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            background: linear-gradient(45deg, var(--kl-pink), #ff00cc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .screen { display: none; }
-        .screen.active { display: block; }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #2a2a2a;
-        }
-
-        .balance-title { color: var(--text-gray); font-size: 14px; }
-        .balance-amount { font-size: 32px; font-weight: bold; margin: 10px 0; color: #00ff66; }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0 15px 0;
-            background-color: #2b2b2b;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: white;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(90deg, var(--kl-purple), var(--kl-pink));
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        button:hover { opacity: 0.9; }
-        .btn-secondary { background: #333; margin-top: 10px; }
-
-        .order-item {
-            background: #252525;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 5px solid #ff9900;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .status-принят { background-color: #ff9900; color: black; }
-        .status-делается { background-color: #0077ff; color: white; }
-        .status-пвз { background-color: #00ff66; color: black; }
-
-        .admin-panel {
-            background: #2a1435;
-            border: 1px solid var(--kl-pink);
-        }
-        .admin-order {
-            background: #1e1e1e;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        .admin-btns { display: flex; gap: 5px; margin-top: 5px; }
-        .admin-btns button { padding: 8px; font-size: 12px; }
+        body { background: #121212; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .app-container { width: 100%; max-width: 480px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; background: #2b2b2b; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background: linear-gradient(90deg, #481173, #cb11ab); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 12px; background: #ff9900; }
+        .admin-panel { background: #2a1435; border: 1px solid #cb11ab; }
     </style>
 </head>
 <body>
-
 <div class="app-container">
-    <div class="header">
-        <h1>КЛЕР БАНК & КЛ</h1>
-    </div>
-
-    <div id="auth-screen" class="screen active">
+    <div id="auth-screen" class="screen">
         <div class="card">
-            <h3>Вход в систему</h3>
-            <label>Ваш Никнейм:</label>
-            <input type="text" id="auth-username" placeholder="Введите ник...">
-            <label>Пароль:</label>
-            <input type="password" id="auth-password" placeholder="Введите пароль...">
-            
+            <h3>Вход в КЛ</h3>
+            <input type="text" id="auth-username" placeholder="Ник...">
+            <input type="password" id="auth-password" placeholder="Пароль...">
             <button onclick="handleLogin()">Войти</button>
-            <button onclick="handleRegister()" class="btn-secondary">Создать аккаунт</button>
+            <button onclick="handleRegister()" style="background: #333;">Создать аккаунт</button>
         </div>
     </div>
 
-    <div id="main-screen" class="screen">
+    <div id="main-screen" class="screen" style="display:none;">
         <div class="card">
-            <div class="balance-title">Личный кабинет: <span id="user-name" style="color:white; font-weight:bold;"></span></div>
-            <div class="balance-amount"><span id="user-balance">0</span> РБ</div>
-            <button onclick="logout()" class="btn-secondary" style="padding: 6px; font-size: 12px; width: auto; margin-top: 5px;">Выйти</button>
+            <div id="user-info"></div>
+            <div style="font-size: 32px; font-weight: bold; color: #00ff66;"><span id="user-balance">0</span> РБ</div>
         </div>
-
         <div class="card">
-            <h3>📦 Заказать товар в ПВЗ КЛ</h3>
-            <label>Что хотите заказать?</label>
-            <input type="text" id="order-item-name" placeholder="Например: Кола, чипсы, шоколадка...">
-            <button onclick="createOrder()">Оформить заказ в КЛ</button>
+            <h3>Заказать товар</h3>
+            <input type="text" id="order-item-name" placeholder="Например: Кола...">
+            <button onclick="createOrder()">Оформить заказ</button>
         </div>
-
         <div class="card">
-            <h3>📋 Мои заказы и статусы</h3>
-            <div id="my-orders-list">Пока нет заказов...</div>
+            <h3>Мои заказы</h3>
+            <div id="my-orders-list"></div>
         </div>
-
-        <div id="admin-section" class="card admin-panel" style="display: none;">
-            <h3>👑 Управление заказами ПВЗ КЛ (Для Серёги)</h3>
-            <div id="all-orders-list">Заказов в системе нет...</div>
+        <div id="admin-section" class="card admin-panel" style="display:none;">
+            <h3>👑 Админка Серёги</h3>
+            <input type="text" id="admin-target-user" placeholder="Ник игрока">
+            <input type="number" id="admin-money-amount" placeholder="Сумма (или -сумма)">
+            <button onclick="adminChangeBalance()" style="background:#00ff66; color:black;">💰 Изменить баланс</button>
+            <h4>Заказы:</h4>
+            <div id="all-orders-list"></div>
         </div>
     </div>
 </div>
-
 <script>
     let currentUser = null;
-
-    function switchScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-    }
-
     async function handleLogin() {
-        const username = document.getElementById('auth-username').value.trim();
-        const password = document.getElementById('auth-password').value.trim();
-        if(!username || !password) return alert('Заполните все поля!');
-
-        try {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                currentUser = data.user;
-                initDashboard();
-            } else {
-                alert(data.message);
-            }
-        } catch (err) {
-            alert('Ошибка соединения с сервером!');
-        }
-    }
-
-    async function handleRegister() {
-        const username = document.getElementById('auth-username').value.trim();
-        const password = document.getElementById('auth-password').value.trim();
-        if(!username || !password) return alert('Заполните все поля!');
-
-        try {
-            const res = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await res.json();
-            alert(data.message);
-        } catch (err) {
-            alert('Ошибка при регистрации!');
-        }
-    }
-
-    function initDashboard() {
-        document.getElementById('user-name').innerText = currentUser.username;
-        document.getElementById('user-balance').innerText = currentUser.balance;
-        switchScreen('main-screen');
-        
-        if(currentUser.username === 'bot_banker' || currentUser.role === 'admin') {
-            document.getElementById('admin-section').style.display = 'block';
-            loadAdminOrders();
-        } else {
-            document.getElementById('admin-section').style.display = 'none';
-        }
-
-        loadMyOrders();
-    }
-
-    async function createOrder() {
-        const itemInput = document.getElementById('order-item-name');
-        const item = itemInput.value.trim();
-        if(!item) return alert('Напишите, что заказываете!');
-
-        const res = await fetch('/api/orders/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: currentUser.username, item: item })
-        });
+        const username = document.getElementById('auth-username').value;
+        const password = document.getElementById('auth-password').value;
+        const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username, password}) });
         const data = await res.json();
-        if(data.success) {
-            itemInput.value = '';
-            loadMyOrders();
-            if(currentUser.username === 'bot_banker' || currentUser.role === 'admin') loadAdminOrders();
-        }
+        if(data.success) { currentUser = data.user; showMain(); } else alert(data.message);
     }
-
-    async function loadMyOrders() {
-        const res = await fetch(`/api/orders/my/${currentUser.username}`);
-        const orders = await res.json();
-        const container = document.getElementById('my-orders-list');
-        
-        if(orders.length === 0) {
-            container.innerHTML = 'У вас пока нет активных заказов.';
-            return;
-        }
-
-        container.innerHTML = orders.map(o => {
-            let badgeClass = 'status-принят';
-            let borderLeftColor = '#ff9900';
-            
-            if(o.status === 'Делается') {
-                badgeClass = 'status-делается';
-                borderLeftColor = '#0077ff';
-            }
-            if(o.status === 'Лежит и ждёт вас в ПВЗ') {
-                badgeClass = 'status-пвз';
-                borderLeftColor = '#00ff66';
-            }
-
-            return `
-                <div class="order-item" style="border-left-color: ${borderLeftColor}">
-                    <strong>${o.item}</strong><br>
-                    <span class="status-badge ${badgeClass}">${o.status}</span>
+    async function handleRegister() {
+        const username = document.getElementById('auth-username').value;
+        const password = document.getElementById('auth-password').value;
+        const res = await fetch('/api/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username, password}) });
+        alert((await res.json()).message);
+    }
+    function showMain() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'block';
+        document.getElementById('user-name').innerText = currentUser.username;
+        if(currentUser.username === 'bot_banker') document.getElementById('admin-section').style.display = 'block';
+        loadAll();
+    }
+    async function adminChangeBalance() {
+        const targetUser = document.getElementById('admin-target-user').value;
+        const amount = document.getElementById('admin-money-amount').value;
+        await fetch('/api/admin/change-balance', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({targetUser, amount}) });
+        alert('Баланс изменён!');
+    }
+    async function createOrder() {
+        const item = document.getElementById('order-item-name').value;
+        await fetch('/api/orders/create', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({username: currentUser.username, item}) });
+        loadAll();
+    }
+    async function updateOrderStatus(id, status) {
+        await fetch('/api/orders/update-status', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({orderId: id, newStatus: status}) });
+        loadAll();
+    }
+    async function loadAll() {
+        // Баланс
+        const resBal = await fetch(`/api/user/balance/${currentUser.username}`);
+        document.getElementById('user-balance').innerText = (await resBal.json()).balance;
+        // Мои заказы
+        const resMy = await fetch(`/api/orders/my/${currentUser.username}`);
+        document.getElementById('my-orders-list').innerHTML = (await resMy.json()).map(o => `<div>${o.item}: <b>${o.status}</b></div>`).join('');
+        // Админка
+        if(currentUser.username === 'bot_banker') {
+            const resAll = await fetch('/api/orders/all');
+            const orders = (await resAll.json()).filter(o => o.status !== 'Выдано');
+            document.getElementById('all-orders-list').innerHTML = orders.map(o => `
+                <div style="margin:10px 0;">
+                    <b>${o.username}</b>: ${o.item} (${o.status})<br>
+                    <button onclick="updateOrderStatus(${o.id}, 'Выдано')" style="background:#ff00cc; padding:5px;">✅ Выдано</button>
                 </div>
-            `;
-        }).join('');
-    }
-
-    async function loadAdminOrders() {
-        const res = await fetch('/api/orders/all');
-        const orders = await res.json();
-        const container = document.getElementById('all-orders-list');
-
-        if(orders.length === 0) {
-            container.innerHTML = 'Заказов от клиентов пока нет.';
-            return;
+            `).join('');
         }
-
-        container.innerHTML = orders.map(o => `
-            <div class="admin-order">
-                <div>👤 <b>${o.username}</b> заказал: <b>${o.item}</b></div>
-                <div>Статус: <u>${o.status}</u></div>
-                <div class="admin-btns">
-                    <button onclick="updateOrderStatus(${o.id}, 'Делается')" style="background:#0077ff">🔨 Делается</button>
-                    <button onclick="updateOrderStatus(${o.id}, 'Лежит и ждёт вас в ПВЗ')" style="background:#00ff66; color:black;">🏪 В ПВЗ</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    async function updateOrderStatus(orderId, newStatus) {
-        await fetch('/api/orders/update-status', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderId, newStatus })
-        });
-        loadAdminOrders();
-        loadMyOrders();
-    }
-
-    function logout() {
-        currentUser = null;
-        switchScreen('auth-screen');
     }
 </script>
 </body>
