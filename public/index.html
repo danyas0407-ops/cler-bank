@@ -2,14 +2,72 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>КЛЕР БАНК</title>
     <style>
-        body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; }
-        .box { width: 320px; margin: 50px auto; padding: 25px; background: #151515; border-radius: 20px; border: 1px solid #333; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        /* Базовые настройки для телефона */
+        body { 
+            background: #0a0a0a; 
+            color: white; 
+            /* Добавлены системные шрифты, чтобы на iPhone и Android текст был идеально четким */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            padding: 15px; /* Отступы по краям экрана */
+            font-size: 16px; /* Увеличили базовый размер текста */
+        }
+        
+        /* Блок теперь растягивается под ширину телефона */
+        .box { 
+            width: 100%; 
+            max-width: 400px; /* На ПК не будет слишком широким */
+            margin: 10px auto; 
+            padding: 20px; 
+            background: #151515; 
+            border-radius: 20px; 
+            border: 1px solid #333; 
+            box-sizing: border-box; 
+        }
+
+        /* Крупные поля ввода, чтобы легко попадать пальцем */
+        input { 
+            width: 100%; 
+            padding: 16px; 
+            margin: 10px 0; 
+            border-radius: 12px; 
+            border: none; 
+            box-sizing: border-box; 
+            font-size: 16px; /* Текст внутри инпута крупный */
+            background: #222;
+            color: white;
+        }
+
+        /* Крупные и удобные кнопки */
+        button { 
+            width: 100%; 
+            padding: 16px; 
+            margin: 10px 0; 
+            border-radius: 12px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px; 
+        }
+        
         .btn-main { background: #8a2be2; color: white; }
         .btn-sec { background: #333; color: white; }
+        
+        /* Карточки заказов */
+        .order-card { 
+            background: #222; 
+            padding: 15px; 
+            margin: 12px 0; 
+            border-radius: 12px; 
+            text-align: left; 
+            font-size: 15px; 
+            border-left: 4px solid #8a2be2;
+            word-wrap: break-word; /* Чтобы длинные слова не ломали экран */
+        }
     </style>
 </head>
 <body>
@@ -23,13 +81,25 @@
 </div>
 
 <div id="main" class="box" style="display:none">
-    <h3>КЛЕР БАНК</h3>
-    <input id="item" placeholder="Название маски">
-    <button class="btn-main" onclick="order()">Заказать</button>
+    <h3>Баланс: <span id="bal" style="color: #8a2be2;">0</span> РБ</h3>
+    
+    <div id="user-panel">
+        <input id="item" placeholder="Какую маску заказываете?">
+        <button class="btn-main" onclick="order()">Заказать (100 РБ)</button>
+        
+        <h4 style="text-align: left; margin-top: 20px;">Ваши заказы:</h4>
+        <div id="my-orders"></div>
+    </div>
+
+    <div id="admin-panel" style="display:none; border-top: 2px solid #333; margin-top: 25px; padding-top: 15px;">
+        <h3 style="color: #00ffcc;">👑 Админ-панель</h3>
+        <div id="all-orders"></div>
+    </div>
 </div>
 
 <script>
-    let currentUsername = "";
+    let currentUser = null;
+
     async function auth(type) {
         const u = document.getElementById('u').value;
         const p = document.getElementById('p').value;
@@ -37,19 +107,63 @@
             method:'POST', headers:{'Content-Type':'application/json'}, 
             body:JSON.stringify({username: u, password: p})
         });
-        if((await res.json()).success) { 
-            currentUsername = u;
+        const data = await res.json();
+        if(data.success) { 
+            currentUser = u;
             document.getElementById('auth').style.display='none'; 
             document.getElementById('main').style.display='block'; 
-        } else alert("Ошибка!");
+            updateData();
+        } else {
+            alert(data.message || "Ошибка!");
+        }
     }
+
+    async function updateData() {
+        const res = await fetch('/api/data/' + currentUser);
+        const data = await res.json();
+        
+        document.getElementById('bal').innerText = data.balance;
+        
+        document.getElementById('my-orders').innerHTML = data.myOrders.map(o => 
+            `<div class="order-card"><b>${o.item}</b><br><span style="color:#aaa">Статус:</span> ${o.status}</div>`
+        ).join('') || "<p style='color:gray; font-size:14px;'>Заказов пока нет</p>";
+
+        if(data.role === 'admin') {
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('all-orders').innerHTML = data.allOrders.map(o => 
+                `<div class="order-card">
+                    <b>Клиент:</b> ${o.username} <br>
+                    <b>Маска:</b> ${o.item} <br>
+                    <b>Статус:</b> <span style="color:#00ffcc">${o.status}</span> <br>
+                    <button onclick="setStatus(${o.id}, '✅ Выполнено')" style="background: #28a745; color: white; padding: 12px; margin-top: 10px; font-size: 14px;">Отметить как Выполнено</button>
+                </div>`
+            ).join('') || "<p style='color:gray; font-size:14px;'>Новых заказов нет</p>";
+        }
+    }
+
     async function order() {
         const item = document.getElementById('item').value;
-        await fetch('/api/order', { 
+        if(!item) return alert("Введите название маски!");
+        
+        const res = await fetch('/api/order', { 
             method:'POST', headers:{'Content-Type':'application/json'}, 
-            body:JSON.stringify({username: currentUsername, item: item})
+            body:JSON.stringify({username: currentUser, item: item})
         });
-        alert("Заказ оформлен!");
+        const data = await res.json();
+        if(data.success) {
+            document.getElementById('item').value = '';
+            updateData();
+        } else {
+            alert(data.message);
+        }
+    }
+
+    async function setStatus(id, status) {
+        await fetch('/api/update-status', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({id, status})
+        });
+        updateData();
     }
 </script>
 </body>
