@@ -7,13 +7,12 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
-// Храним базу данных прямо в оперативной памяти сервера, чтобы Vercel не блокировал запись
-// Сюда я уже вписал готовые аккаунты, чтобы они работали ВСЕГДА:
+// База данных прямо в памяти сервера
 let db = {
     users: {
         "bot_banker": { "password": "123", "balance": 5000, "role": "admin" },
         "danya": { "password": "12345", "balance": 1000, "role": "user" },
-        "admin": { "password": "123", "balance": 99999, "role": "admin" }
+        "den": { "password": "123", "balance": 0, "role": "user" }
     },
     orders: []
 };
@@ -25,9 +24,8 @@ app.post('/api/register', (req, res) => {
     
     if (db.users[username]) return res.status(400).json({ success: false, message: 'Этот ник уже занят!' });
     
-    // Добавляем пользователя в память
     db.users[username] = { password: password, balance: 0, role: 'user' };
-    res.json({ success: true, message: 'Регистрация успешна! Теперь введите пароль и нажмите кнопку "Войти".' });
+    res.json({ success: true, message: 'Регистрация успешна! Введите пароль и нажмите "Войти".' });
 });
 
 app.post('/api/login', (req, res) => {
@@ -39,7 +37,25 @@ app.post('/api/login', (req, res) => {
     res.json({ success: true, user: { username, balance: db.users[username].balance, role: db.users[username].role } });
 });
 
-// === API СИСТЕМЫ ЗАКАЗОВ КЛ ===
+// === API НАЧИСЛЕНИЯ БАЛАНСА (ДЛЯ АДМИНА) ===
+app.post('/api/admin/change-balance', (req, res) => {
+    const { targetUser, amount } = req.body;
+    
+    if (!db.users[targetUser]) {
+        return res.status(404).json({ success: false, message: 'Пользователь не найден!' });
+    }
+    
+    db.users[targetUser].balance += parseInt(amount);
+    res.json({ success: true, newBalance: db.users[targetUser].balance });
+});
+
+// === API ПОЛУЧЕНИЯ ТЕКУЩЕГО БАЛАНСА ===
+app.get('/api/user/balance/:username', (req, res) => {
+    if (!db.users[req.params.username]) return res.status(404).json({ balance: 0 });
+    res.json({ balance: db.users[req.params.username].balance });
+});
+
+// === API СИСТЕМЫ ЗАКАЗОВ ===
 app.post('/api/orders/create', (req, res) => {
     const { username, item } = req.body;
     if (!username || !item) return res.status(400).json({ success: false, message: 'Не указан товар!' });
@@ -52,7 +68,7 @@ app.post('/api/orders/create', (req, res) => {
     };
 
     db.orders.push(newOrder);
-    res.json({ success: true, message: 'Заказ успешно отправлен в ПВЗ КЛ!', order: newOrder });
+    res.json({ success: true, message: 'Заказ отправлен в ПВЗ КЛ!', order: newOrder });
 });
 
 app.get('/api/orders/my/:username', (req, res) => {
