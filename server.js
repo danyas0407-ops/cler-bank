@@ -8,6 +8,7 @@ const dbPath = path.join(__dirname, 'database.json');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // Чтение базы данных
 function readDB() {
@@ -96,9 +97,22 @@ app.post('/api/orders/update-status', (req, res) => {
     res.json({ success: true });
 });
 
+// === СТРАХОВКА ОТ 404 ОШИБКИ (Авто-поиск index.html) ===
+app.get('*', (req, res) => {
+    const publicPath = path.join(__dirname, 'public', 'index.html');
+    const rootPath = path.join(__dirname, 'index.html');
+    
+    if (fs.existsSync(publicPath)) {
+        res.sendFile(publicPath);
+    } else if (fs.existsSync(rootPath)) {
+        res.sendFile(rootPath);
+    } else {
+        res.status(404).send('Файл index.html не найден ни в корне, ни в папке public!');
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Сервер КлерБанка + КЛ запущен на порту ${PORT}`);
 });
 
-// Экспорт для корректной работы серверлесс-функций Vercel
 module.exports = app;
