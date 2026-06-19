@@ -2,81 +2,103 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+const dbPath = path.join(__dirname, 'database.json');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const DB_FILE = path.join(__dirname, 'database.json');
-
+// Чтение базы данных
 function readDB() {
     try {
-        return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+        if (!fs.existsSync(dbPath)) {
+            fs.writeFileSync(dbPath, JSON.stringify({ users: {}, orders: [] }, null, 2));
+        }
+        const data = fs.readFileSync(dbPath, 'utf8');
+        let json = JSON.parse(data);
+        if (!json.orders) json.orders = [];
+        return json;
     } catch (err) {
-        return { users: { "Seryoga": 5000 }, orders: {} };
+        return { users: {}, orders: [] };
     }
 }
 
+// Запись в базу данных
 function writeDB(data) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+    try {
+        fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+    } catch (err) {
+        console.error("Ошибка записи базы данных:", err);
+    }
 }
 
-// Баланс
-app.get('/api/balance/:username', (req, res) => {
+// === API РЕГИСТРАЦИИ И ВХОДА ===
+app.post('/api/register', (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ success: false, message: 'Заполните все поля!' });
+    
     const db = readDB();
-    const user = req.params.username;
-    const balance = db.users[user] !== undefined ? db.users[user] : 0;
-    res.json({ username: user, balance: balance });
-});
-
-// Переводы робликов
-app.post('/api/transaction', (req, res) => {
-    const { from, to, amount } = req.body;
-    const db = readDB();
-
-    if (!db.users[from] || db.users[from] < amount) {
-        return res.status(400).json({ error: "Недостаточно робликов или аккаунт не найден" });
-    }
-    if (amount <= 0) {
-        return res.status(400).json({ error: "Неверная сумма перевода" });
-    }
-
-    db.users[from] -= amount;
-    db.users[to] = (db.users[to] || 0) + amount;
-
+    if (db.users[username]) return res.status(400).json({ success: false, message: 'Этот ник уже занят!' });
+    
+    db.users[username] = { password: password, balance: 0, role: 'user' };
     writeDB(db);
-    res.json({ success: true, newBalance: db.users[from] });
+    res.json({ success: true, message: 'Регистрация успешна! Теперь нажмите кнопку "Войти".' });
 });
 
-// Сканирование в ПВЗ
-app.post('/api/pvz/scan', (req, res) => {
-    const { qrToken } = req.body;
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
     const db = readDB();
-    const order = db.orders[qrToken];
-
-    if (!order) {
-        return res.status(404).json({ error: "Заказ не найден в базе ПВЗ Клер Банка!" });
+    
+    if (!db.users[username] || db.users[username].password !== password) {
+        return res.status(400).json({ success: false, message: 'Неверный ник или пароль!' });
     }
-    if (order.status === "Выдано") {
-        return res.status(400).json({ error: "Этот заказ уже был выдан!" });
-    }
-
-    res.json({ success: true, ...order });
+    res.json({ success: true, user: { username, balance: db.users[username].balance, role: db.users[username].role } });
 });
 
-// Выдача маски
-app.post('/api/pvz/complete', (req, res) => {
-    const { qrToken } = req.body;
+// === API СИСТЕМЫ ЗАКАЗОВ КЛ ===
+app.post('/api/orders/create', (req, res) => {
+    const { username, item } = req.body;
+    if (!username || !item) return res.status(400).json({ success: false, message: 'Не указан товар!' });
+
     const db = readDB();
+    const newOrder = {
+        id: Date.now(),
+        username: username,
+        item: item,
+        status: 'Принят'
+    };
 
-    if (db.orders[qrToken]) {
-        db.orders[qrToken].status = "Выдано";
-        writeDB(db);
-        return res.json({ success: true, message: "Статус обновлен" });
-    }
-    res.status(404).json({ error: "Заказ не найден" });
+    db.orders.push(newOrder);
+    writeDB(db);
+    res.json({ success: true, message: 'Заказ успешно отправлен в ПВЗ КЛ!', order: newOrder });
 });
 
-const PORT = process.env.PORT || 3000;
+app.get('/api/orders/my/:username', (req, res) => {
+    const db = readDB();
+    const userOrders = db.orders.filter(order => order.username === req.params.username);
+    res.json(userOrders);
+});
+
+app.get('/api/orders/all', (req, res) => {
+    const db = readDB();
+    res.json(db.orders);
+});
+
+app.post('/api/orders/update-status', (req, res) => {
+    const { orderId, newStatus } = req.body;
+    const db = readDB();
+    const order = db.orders.find(o => o.id == orderId);
+    if (!order) return res.status(404).json({ success: false, message: 'Заказ не найден!' });
+
+    order.status = newStatus;
+    writeDB(db);
+    res.json({ success: true });
+});
+
 app.listen(PORT, () => {
-    console.log(`🚀 Клер Банк запущен на порту ${PORT}`);
+    console.log(`Сервер КлерБанка + КЛ запущен на порту ${PORT}`);
 });
+
+// Экспорт для корректной работы серверлесс-функций Vercel
+module.exports = app;
