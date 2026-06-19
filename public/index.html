@@ -1,55 +1,58 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>КЛЕР БАНК</title>
+    <meta charset="UTF-8"><title>КЛЕР БАНК</title>
     <style>
-        body { background: #0a0a0a; color: #fff; font-family: sans-serif; display: flex; justify-content: center; }
-        .container { width: 350px; padding: 20px; background: #1a1a1a; border-radius: 20px; margin-top: 50px; }
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; box-sizing: border-box; }
-        button { background: #8a2be2; color: #fff; font-weight: bold; cursor: pointer; }
-        .order { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; }
+        body { background: #0a0a0a; color: white; font-family: sans-serif; display: flex; justify-content: center; }
+        .box { width: 350px; padding: 20px; background: #1a1a1a; border-radius: 20px; margin-top: 20px; }
+        input, button { width: 100%; padding: 12px; margin: 5px 0; border-radius: 10px; border: none; }
+        button { background: #8a2be2; color: white; font-weight: bold; cursor: pointer; }
+        .order { padding: 10px; border-bottom: 1px solid #333; }
+        .btn-row { display: flex; gap: 5px; }
     </style>
 </head>
 <body>
-<div class="container" id="auth">
-    <h2>Вход / Регистрация</h2>
-    <input id="u" placeholder="Никнейм">
-    <input id="p" type="password" placeholder="Пароль">
+<div class="box" id="auth">
+    <h2>Вход</h2>
+    <input id="u" placeholder="Ник"><input id="p" type="password" placeholder="Пароль">
     <button onclick="auth('login')">Войти</button>
     <button onclick="auth('register')" style="background:#333">Регистрация</button>
 </div>
-<div class="container" id="main" style="display:none">
+
+<div class="box" id="main" style="display:none">
     <h3>Баланс: <span id="bal">0</span> РБ</h3>
-    <input id="item" placeholder="Что заказать?">
-    <button onclick="order()">Заказать</button>
+    <input id="item" placeholder="Что заказать?"><button onclick="order()">Заказать</button>
     <div id="orders"></div>
-    <div id="admin" style="display:none; border-top: 2px solid #8a2be2; margin-top: 20px;">
+    <div id="admin" style="display:none; border-top: 2px solid #8a2be2; margin-top: 15px;">
         <h3>👑 Админка</h3>
-        <input id="a-u" placeholder="Ник игрока">
-        <input id="a-s" placeholder="Сумма">
+        <input id="a-u" placeholder="Ник"><input id="a-s" placeholder="Сумма">
         <button onclick="adminBal()">Начислить</button>
         <div id="all-orders"></div>
     </div>
 </div>
+
 <script>
     let user = null;
     async function auth(type) {
         const username = document.getElementById('u').value;
-        const password = document.getElementById('p').value;
-        const res = await fetch('/api/'+type, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username, password})});
+        const res = await fetch('/api/'+type, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username, password:document.getElementById('p').value})});
         const data = await res.json();
         if(data.success) { user = username; document.getElementById('auth').style.display='none'; document.getElementById('main').style.display='block'; update(); }
         else alert(data.message);
     }
     async function update() {
-        const res = await fetch('/api/data/'+user);
-        const d = await res.json();
+        const d = await (await fetch('/api/data/'+user)).json();
         document.getElementById('bal').innerText = d.balance;
-        document.getElementById('orders').innerHTML = d.myOrders.map(o => `<div class="order">${o.item} <b>${o.status}</b></div>`).join('');
+        document.getElementById('orders').innerHTML = d.myOrders.map(o => `<div class="order">${o.item}: <b>${o.status}</b></div>`).join('');
         if(d.allOrders) {
             document.getElementById('admin').style.display='block';
-            document.getElementById('all-orders').innerHTML = d.allOrders.map(o => `<div class="order">${o.username}: ${o.item} <button onclick="setStatus(${o.id}, 'Выдано')" style="width:auto">✅</button></div>`).join('');
+            document.getElementById('all-orders').innerHTML = d.allOrders.map(o => `
+                <div class="order">${o.username}: ${o.item}<br>
+                <div class="btn-row">
+                    <button onclick="setStatus(${o.id}, 'Делается')" style="background:#555">Делается</button>
+                    <button onclick="setStatus(${o.id}, 'Ждет в ПВЗ')" style="background:#4169e1">ПВЗ</button>
+                    <button onclick="setStatus(${o.id}, 'Выдано')" style="background:#c71585">Выдано</button>
+                </div></div>`).join('');
         }
     }
     async function order() {
