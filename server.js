@@ -23,7 +23,7 @@ app.post('/api/login', (req, res) => {
     if (db.users[username] && db.users[username].password === password) {
         res.json({ success: true, user: { username, ...db.users[username] } });
     } else {
-        res.status(401).json({ success: false, message: 'Неверный логин/пароль' });
+        res.status(401).json({ success: false, message: 'Ошибка входа' });
     }
 });
 
@@ -31,13 +31,20 @@ app.post('/api/admin/balance', (req, res) => {
     const { target, amount } = req.body;
     if (db.users[target]) {
         db.users[target].balance += parseInt(amount);
-        res.json({ success: true, newBalance: db.users[target].balance });
+        res.json({ success: true });
     } else res.status(404).json({ success: false });
 });
 
 app.post('/api/order', (req, res) => {
     const { username, item } = req.body;
-    db.orders.push({ id: Date.now(), username, item, status: 'Принят' });
+    db.orders.push({ 
+        id: Date.now(), 
+        orderNumber: Math.floor(1000 + Math.random() * 9000),
+        address: "СНТ Оргстроевец, 62",
+        username, 
+        item, 
+        status: 'Принят' 
+    });
     res.json({ success: true });
 });
 
@@ -50,6 +57,7 @@ app.post('/api/update-status', (req, res) => {
 
 app.get('/api/data/:username', (req, res) => {
     const u = db.users[req.params.username];
+    if (!u) return res.status(404).json({});
     res.json({
         balance: u.balance,
         myOrders: db.orders.filter(o => o.username === req.params.username),
